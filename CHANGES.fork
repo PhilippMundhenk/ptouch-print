@@ -1,0 +1,13 @@
+Changes in this fork of ptouch-print compared to ptouch-print v1.9 by Dominic Radermacher
+(GNU GPL v3, section 5a: notice of modification). One commit per change, see "git log v1.9..".
+
+2026-11-09  Philipp Mundhenk
+  * --feed <dots>: send ESC i d (margin amount); nothing changes without the option.
+  * --halfcut: send ESC i K with the half cut bit and the chain bit from --chain; replaces the
+    separate PT-D460BT chain command when sent.
+  * --cut-every <n>: send ESC i A n together with auto cut (ESC i M 0x40).
+  * --hires: set the high resolution bit of ESC i K; --writepng records the doubled
+    horizontal resolution.
+  * udev/20-usb-ptouch-permissions.rules: also GROUP="lp", for services.
+  * Print size_t values with %zu instead of %ld (src/*.c, po/*); translations updated.
+  * README.md and CHANGES.fork: notes about this fork.
