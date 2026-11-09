@@ -80,6 +80,11 @@ Print a cutmark (dashed line) at the current position.
 .BR \-\-pad\  \fI<n>
 Print <n> pixels of white space at the current position. Useful for printers
 that would otherwise cut off parts of the printed text or image.
+.TP
+.BR \-\-feed\  \fI<dots>
+Blank tape the printer adds before and after the label, in dots (0 to 1000).
+Without this option the printer uses its default of 14 dots (2 mm at 180 dpi).
+Small values save tape, mostly in chain mode.
 
 .SS "Getting help and display information"
 .TP

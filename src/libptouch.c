@@ -338,6 +338,20 @@ int ptouch_send_precut_cmd(ptouch_dev ptdev, int precut)
 	return ptouch_send(ptdev, (uint8_t *)cmd, sizeof(cmd)-1);
 }
 
+/* 1B 69 64 {n1} {n2} = ESC i d = specify margin amount (feed amount)
+   The blank tape before and after the print, in dots (n1 + n2*256). The
+   printer's default is 14 dots (2 mm at 180 dpi). */
+int ptouch_send_margin(ptouch_dev ptdev, int dots)
+{
+	uint8_t cmd[] = "\x1b\x69\x64\x00\x00";
+	if ((dots < 0) || (dots > 0xffff)) {
+		return -1;
+	}
+	cmd[3] = (uint8_t)(dots & 0xff);
+	cmd[4] = (uint8_t)((dots >> 8) & 0xff);
+	return ptouch_send(ptdev, cmd, sizeof(cmd)-1);
+}
+
 int ptouch_rasterstart(ptouch_dev ptdev)
 {
 	if (!ptdev) {

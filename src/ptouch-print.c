@@ -66,6 +66,7 @@ struct arguments {
 	int verbose;
 	int timeout;
 	char *serial;
+	int feed;
 };
 
 typedef enum { JOB_CUTMARK, JOB_IMAGE, JOB_PAD, JOB_TEXT, JOB_UNDEFINED } job_type_t;
@@ -119,6 +120,7 @@ static struct argp_option options[] = {
 	{ "pad", 'p', "<n>", 0, "Add n pixels padding (blank tape)", 2},
 	{ "chain", 10, 0, 0, "Skip final feed of label and any automatic cut", 2},
 	{ "precut", 11, 0, 0, "Add a cut before the label (useful in chain mode for cuts with minimal waste)", 2},
+	{ "feed", 13, "<dots>", 0, "Blank tape before and after the label in dots (printer default: 14)", 2},
 	{ "newline", 'n', "<text>", 0, "Add text in a new line (up to 4 lines). \\n will be replaced by a newline", 2},
 	{ "align", 'a', "<l|c|r>", 0, "Align text (when printing multiple lines)", 2},
 
@@ -145,7 +147,8 @@ struct arguments arguments = {
 	.save_png = NULL,
 	.verbose = 0,
 	.timeout = -1,		/* -1 = not given; 0 is already "infinity" */
-	.serial = NULL
+	.serial = NULL,
+	.feed = -1		/* -1 = printer default */
 };
 
 job_t *jobs = NULL;
@@ -245,6 +248,13 @@ int print_img(ptouch_dev ptdev, gdImage *im, int chain, int precut)
 			if (arguments.debug) {
 				printf(_("send PT-D460BT chain commands\n"));
 			}
+		}
+	}
+	if (arguments.feed >= 0) {
+		/* after the PT-D460BT magic, which sets a margin of its own */
+		ptouch_send_margin(ptdev, arguments.feed);
+		if (arguments.debug) {
+			printf(_("send margin command (%d dots)\n"), arguments.feed);
 		}
 	}
 	for (int k = 0; k < gdImageSX(im); ++k) {
@@ -695,6 +705,15 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 		case 12: // serial
 			arguments->serial = arg;
 			break;
+		case 13: { // feed
+			char *end = NULL;
+			long v = strtol(arg, &end, 10);
+			if ((end == arg) || (*end != '\0') || (v < 0) || (v > 1000)) {
+				argp_failure(state, 1, EINVAL, _("--feed needs a number of dots between 0 and 1000"));
+			}
+			arguments->feed = (int)v;
+			break;
+		}
 		case 'a': // align
 			if ((strcmp(arg, "c") == 0) || (strcmp(arg, "center") == 0)) {
 				arguments->align = ALIGN_CENTER;

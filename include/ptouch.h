@@ -127,6 +127,7 @@ int ptouch_send_d460bt_chain(ptouch_dev ptdev);
 int ptouch_enable_packbits(ptouch_dev ptdev);
 int ptouch_info_cmd(ptouch_dev ptdev, int size_x);
 int ptouch_send_precut_cmd(ptouch_dev ptdev, int precut);
+int ptouch_send_margin(ptouch_dev ptdev, int dots);
 int ptouch_rasterstart(ptouch_dev ptdev);
 int ptouch_sendraster(ptouch_dev ptdev, uint8_t *data, size_t len);
 void ptouch_rawstatus(uint8_t raw[32]);
