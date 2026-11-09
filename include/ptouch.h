@@ -136,6 +136,7 @@ int ptouch_info_cmd(ptouch_dev ptdev, int size_x);
 int ptouch_send_precut_cmd(ptouch_dev ptdev, int precut);
 int ptouch_send_margin(ptouch_dev ptdev, int dots);
 int ptouch_send_advanced_mode(ptouch_dev ptdev, uint8_t mode);
+int ptouch_send_cut_every(ptouch_dev ptdev, int n);
 int ptouch_rasterstart(ptouch_dev ptdev);
 int ptouch_sendraster(ptouch_dev ptdev, uint8_t *data, size_t len);
 void ptouch_rawstatus(uint8_t raw[32]);

@@ -360,6 +360,17 @@ int ptouch_send_advanced_mode(ptouch_dev ptdev, uint8_t mode)
 	return ptouch_send(ptdev, cmd, sizeof(cmd)-1);
 }
 
+/* 1B 69 41 {n} = ESC i A = with auto cut on, cut after every n labels (1-99) */
+int ptouch_send_cut_every(ptouch_dev ptdev, int n)
+{
+	uint8_t cmd[] = "\x1b\x69\x41\x01";
+	if ((n < 1) || (n > 99)) {
+		return -1;
+	}
+	cmd[3] = (uint8_t)n;
+	return ptouch_send(ptdev, cmd, sizeof(cmd)-1);
+}
+
 int ptouch_rasterstart(ptouch_dev ptdev)
 {
 	if (!ptdev) {

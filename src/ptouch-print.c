@@ -68,6 +68,7 @@ struct arguments {
 	char *serial;
 	int feed;
 	bool halfcut;
+	int cut_every;
 };
 
 typedef enum { JOB_CUTMARK, JOB_IMAGE, JOB_PAD, JOB_TEXT, JOB_UNDEFINED } job_type_t;
@@ -123,6 +124,7 @@ static struct argp_option options[] = {
 	{ "precut", 11, 0, 0, "Add a cut before the label (useful in chain mode for cuts with minimal waste)", 2},
 	{ "feed", 13, "<dots>", 0, "Blank tape before and after the label in dots (printer default: 14)", 2},
 	{ "halfcut", 14, 0, 0, "Cut only the tape, not its backing, between labels (printers with a half cutter)", 2},
+	{ "cut-every", 15, "<n>", 0, "With --copies, cut only after every <n> labels (1-99)", 2},
 	{ "newline", 'n', "<text>", 0, "Add text in a new line (up to 4 lines). \\n will be replaced by a newline", 2},
 	{ "align", 'a', "<l|c|r>", 0, "Align text (when printing multiple lines)", 2},
 
@@ -151,7 +153,8 @@ struct arguments arguments = {
 	.timeout = -1,		/* -1 = not given; 0 is already "infinity" */
 	.serial = NULL,
 	.feed = -1,		/* -1 = printer default */
-	.halfcut = false
+	.halfcut = false,
+	.cut_every = 0		/* 0 = not given */
 };
 
 job_t *jobs = NULL;
@@ -253,6 +256,17 @@ int print_img(ptouch_dev ptdev, gdImage *im, int chain, int precut)
 			if (arguments.debug) {
 				printf(_("send precut command\n"));
 			}
+		}
+	}
+	if (arguments.cut_every > 0) {
+		/* "cut every n labels" only works with auto cut on (ESC i M 0x40,
+		   the same command --precut sends) */
+		if (!(precut && (ptdev->devinfo->flags & FLAG_HAS_PRECUT))) {
+			ptouch_send_precut_cmd(ptdev, 1);
+		}
+		ptouch_send_cut_every(ptdev, arguments.cut_every);
+		if (arguments.debug) {
+			printf(_("send cut every %d labels command\n"), arguments.cut_every);
 		}
 	}
 	/* send chain command after precut, to allow precutting before chain */
@@ -739,6 +753,15 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 		case 14: // halfcut
 			arguments->halfcut = true;
 			break;
+		case 15: { // cut-every
+			char *end = NULL;
+			long v = strtol(arg, &end, 10);
+			if ((end == arg) || (*end != '\0') || (v < 1) || (v > 99)) {
+				argp_failure(state, 1, EINVAL, _("--cut-every needs a number between 1 and 99"));
+			}
+			arguments->cut_every = (int)v;
+			break;
+		}
 		case 'a': // align
 			if ((strcmp(arg, "c") == 0) || (strcmp(arg, "center") == 0)) {
 				arguments->align = ALIGN_CENTER;
