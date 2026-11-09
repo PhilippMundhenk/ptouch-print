@@ -94,6 +94,12 @@ PT-P900 series); other printers ignore it.
 .BR \-\-cut-every\  \fI<n>
 Together with \-\-copies: turn on auto cut and cut only after every <n>
 labels (1 to 99), so the labels in between stay joined.
+.TP
+.BR \-\-hires
+Print with twice the resolution along the tape (180x360 dpi, or 360x720 dpi on
+360 dpi printers). Every image column is half as long, so images must be
+twice as long as for normal printing. Only some printers support it (for example
+the PT-P750W and the PT-P900 series); it is slower.
 
 .SS "Getting help and display information"
 .TP

@@ -69,6 +69,7 @@ struct arguments {
 	int feed;
 	bool halfcut;
 	int cut_every;
+	bool hires;
 };
 
 typedef enum { JOB_CUTMARK, JOB_IMAGE, JOB_PAD, JOB_TEXT, JOB_UNDEFINED } job_type_t;
@@ -125,6 +126,7 @@ static struct argp_option options[] = {
 	{ "feed", 13, "<dots>", 0, "Blank tape before and after the label in dots (printer default: 14)", 2},
 	{ "halfcut", 14, 0, 0, "Cut only the tape, not its backing, between labels (printers with a half cutter)", 2},
 	{ "cut-every", 15, "<n>", 0, "With --copies, cut only after every <n> labels (1-99)", 2},
+	{ "hires", 16, 0, 0, "High resolution: twice the dpi along the tape. Images must be twice as long (printers that support it)", 2},
 	{ "newline", 'n', "<text>", 0, "Add text in a new line (up to 4 lines). \\n will be replaced by a newline", 2},
 	{ "align", 'a', "<l|c|r>", 0, "Align text (when printing multiple lines)", 2},
 
@@ -154,7 +156,8 @@ struct arguments arguments = {
 	.serial = NULL,
 	.feed = -1,		/* -1 = printer default */
 	.halfcut = false,
-	.cut_every = 0		/* 0 = not given */
+	.cut_every = 0,		/* 0 = not given */
+	.hires = false
 };
 
 job_t *jobs = NULL;
@@ -198,6 +201,9 @@ static uint8_t advanced_mode(void)
 	uint8_t mode = 0;
 	if (arguments.halfcut) {
 		mode |= ADV_HALF_CUT;
+	}
+	if (arguments.hires) {
+		mode |= ADV_HIGH_RES;
 	}
 	return mode;
 }
@@ -753,6 +759,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 		case 14: // halfcut
 			arguments->halfcut = true;
 			break;
+		case 16: // hires
+			arguments->hires = true;
+			break;
 		case 15: { // cut-every
 			char *end = NULL;
 			long v = strtol(arg, &end, 10);
@@ -923,7 +932,8 @@ int main(int argc, char *argv[])
 	if (out) {
 		if (arguments.save_png) {
 			int dpi = ptouch_get_dpi(ptdev);
-			gdImageSetResolution(out, dpi, dpi);
+			/* in high resolution a pixel is half as long along the tape */
+			gdImageSetResolution(out, arguments.hires ? 2*dpi : dpi, dpi);
 			write_png(out, arguments.save_png);
 		} else {
 			for (int i = 0; i < arguments.copies; ++i) {
