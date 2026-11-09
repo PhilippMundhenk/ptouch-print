@@ -352,6 +352,14 @@ int ptouch_send_margin(ptouch_dev ptdev, int dots)
 	return ptouch_send(ptdev, cmd, sizeof(cmd)-1);
 }
 
+/* 1B 69 4B {n} = ESC i K = advanced mode settings, see ADV_* in ptouch.h */
+int ptouch_send_advanced_mode(ptouch_dev ptdev, uint8_t mode)
+{
+	uint8_t cmd[] = "\x1b\x69\x4b\x00";
+	cmd[3] = mode;
+	return ptouch_send(ptdev, cmd, sizeof(cmd)-1);
+}
+
 int ptouch_rasterstart(ptouch_dev ptdev)
 {
 	if (!ptdev) {

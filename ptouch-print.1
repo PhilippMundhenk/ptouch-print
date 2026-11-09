@@ -85,6 +85,11 @@ that would otherwise cut off parts of the printed text or image.
 Blank tape the printer adds before and after the label, in dots (0 to 1000).
 Without this option the printer uses its default of 14 dots (2 mm at 180 dpi).
 Small values save tape, mostly in chain mode.
+.TP
+.BR \-\-halfcut
+Cut through the tape but not its backing between labels, so a strip of labels
+stays in one piece. Only for printers with a half cutter (for example the
+PT-P900 series); other printers ignore it.
 
 .SS "Getting help and display information"
 .TP

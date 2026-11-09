@@ -67,6 +67,7 @@ struct arguments {
 	int timeout;
 	char *serial;
 	int feed;
+	bool halfcut;
 };
 
 typedef enum { JOB_CUTMARK, JOB_IMAGE, JOB_PAD, JOB_TEXT, JOB_UNDEFINED } job_type_t;
@@ -121,6 +122,7 @@ static struct argp_option options[] = {
 	{ "chain", 10, 0, 0, "Skip final feed of label and any automatic cut", 2},
 	{ "precut", 11, 0, 0, "Add a cut before the label (useful in chain mode for cuts with minimal waste)", 2},
 	{ "feed", 13, "<dots>", 0, "Blank tape before and after the label in dots (printer default: 14)", 2},
+	{ "halfcut", 14, 0, 0, "Cut only the tape, not its backing, between labels (printers with a half cutter)", 2},
 	{ "newline", 'n', "<text>", 0, "Add text in a new line (up to 4 lines). \\n will be replaced by a newline", 2},
 	{ "align", 'a', "<l|c|r>", 0, "Align text (when printing multiple lines)", 2},
 
@@ -148,7 +150,8 @@ struct arguments arguments = {
 	.verbose = 0,
 	.timeout = -1,		/* -1 = not given; 0 is already "infinity" */
 	.serial = NULL,
-	.feed = -1		/* -1 = printer default */
+	.feed = -1,		/* -1 = printer default */
+	.halfcut = false
 };
 
 job_t *jobs = NULL;
@@ -183,6 +186,17 @@ void rasterline_setpixel(uint8_t* rasterline, size_t size, int pixel)
 	}
 	rasterline[(size-1)-(pixel/8)] |= (uint8_t)(1<<(pixel%8));
 	return;
+}
+
+/* The ESC i K bits the options ask for, without the chain bit; 0 = do not
+   send the command, so printers without it see no change. */
+static uint8_t advanced_mode(void)
+{
+	uint8_t mode = 0;
+	if (arguments.halfcut) {
+		mode |= ADV_HALF_CUT;
+	}
+	return mode;
 }
 
 int print_img(ptouch_dev ptdev, gdImage *im, int chain, int precut)
@@ -242,7 +256,15 @@ int print_img(ptouch_dev ptdev, gdImage *im, int chain, int precut)
 		}
 	}
 	/* send chain command after precut, to allow precutting before chain */
-	if ((ptdev->devinfo->flags & FLAG_D460BT_MAGIC) == FLAG_D460BT_MAGIC) {
+	uint8_t advanced = advanced_mode();
+	if (advanced) {
+		/* ESC i K also carries the chain bit, so it replaces the PT-D460BT
+		   chain command */
+		ptouch_send_advanced_mode(ptdev, advanced | (chain ? 0 : ADV_NO_CHAIN));
+		if (arguments.debug) {
+			printf(_("send advanced mode command (0x%02x)\n"), advanced | (chain ? 0 : ADV_NO_CHAIN));
+		}
+	} else if ((ptdev->devinfo->flags & FLAG_D460BT_MAGIC) == FLAG_D460BT_MAGIC) {
 		if (chain) {
 			ptouch_send_d460bt_chain(ptdev);
 			if (arguments.debug) {
@@ -714,6 +736,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 			arguments->feed = (int)v;
 			break;
 		}
+		case 14: // halfcut
+			arguments->halfcut = true;
+			break;
 		case 'a': // align
 			if ((strcmp(arg, "c") == 0) || (strcmp(arg, "center") == 0)) {
 				arguments->align = ALIGN_CENTER;

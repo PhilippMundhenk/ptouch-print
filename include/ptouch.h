@@ -49,6 +49,13 @@ typedef enum _pt_page_flags {
 	MIRROR		= (1 << 7),
 } pt_page_flags;
 
+/* ESC i K - advanced mode settings */
+#define ADV_HALF_CUT		(1 << 2)	/* cut the tape, but not its backing */
+#define ADV_NO_CHAIN		(1 << 3)	/* feed and cut after the last label */
+#define ADV_SPECIAL_TAPE	(1 << 4)	/* no cutting at all */
+#define ADV_HIGH_RES		(1 << 6)	/* 2x resolution along the tape */
+#define ADV_NO_BUFFER_CLEAR	(1 << 7)
+
 struct _pt_dev_info {
 	int vid;		/* USB vendor ID */
 	int pid;		/* USB product ID */
@@ -128,6 +135,7 @@ int ptouch_enable_packbits(ptouch_dev ptdev);
 int ptouch_info_cmd(ptouch_dev ptdev, int size_x);
 int ptouch_send_precut_cmd(ptouch_dev ptdev, int precut);
 int ptouch_send_margin(ptouch_dev ptdev, int dots);
+int ptouch_send_advanced_mode(ptouch_dev ptdev, uint8_t mode);
 int ptouch_rasterstart(ptouch_dev ptdev);
 int ptouch_sendraster(ptouch_dev ptdev, uint8_t *data, size_t len);
 void ptouch_rawstatus(uint8_t raw[32]);
