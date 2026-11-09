@@ -75,7 +75,7 @@ msgstr ""
 
 #: src/libptouch.c:252
 #, c-format
-msgid "write error: could send only %i of %ld bytes\n"
+msgid "write error: could send only %i of %zu bytes\n"
 msgstr ""
 
 #: src/libptouch.c:302
@@ -335,12 +335,12 @@ msgstr ""
 
 #: src/ptouch-print.c:789
 #, c-format
-msgid "printer has %d dpi, maximum printing width is %ld px\n"
+msgid "printer has %d dpi, maximum printing width is %zu px\n"
 msgstr ""
 
 #: src/ptouch-print.c:790
 #, c-format
-msgid "maximum printing width for this tape is %ldpx\n"
+msgid "maximum printing width for this tape is %zupx\n"
 msgstr ""
 
 #: src/ptouch-print.c:815

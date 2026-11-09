@@ -77,7 +77,7 @@ msgstr "write error: %s\n"
 
 #: src/libptouch.c:252
 #, fuzzy, c-format
-msgid "write error: could send only %i of %ld bytes\n"
+msgid "write error: could send only %i of %zu bytes\n"
 msgstr "write error: could send only %i of %i bytes\n"
 
 #: src/libptouch.c:302
@@ -337,12 +337,12 @@ msgstr "ptouch_getstatus() failed\n"
 
 #: src/ptouch-print.c:789
 #, fuzzy, c-format
-msgid "printer has %d dpi, maximum printing width is %ld px\n"
+msgid "printer has %d dpi, maximum printing width is %zu px\n"
 msgstr "maximum printing width for this tape is %ipx\n"
 
 #: src/ptouch-print.c:790
 #, fuzzy, c-format
-msgid "maximum printing width for this tape is %ldpx\n"
+msgid "maximum printing width for this tape is %zupx\n"
 msgstr "maximum printing width for this tape is %ipx\n"
 
 #: src/ptouch-print.c:815
@@ -361,7 +361,7 @@ msgid "ptouch_finalize(%d) failed\n"
 msgstr "ptouch_finalize(%d) failed\n"
 
 #, fuzzy, c-format
-#~ msgid "maximum printing width for this printer is %ldpx\n"
+#~ msgid "maximum printing width for this printer is %zupx\n"
 #~ msgstr "maximum printing width for this tape is %ipx\n"
 
 #, c-format

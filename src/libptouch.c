@@ -249,7 +249,7 @@ int ptouch_send(ptouch_dev ptdev, uint8_t *data, size_t len)
 		return -1;
 	}
 	if (tx != (int)len) {
-		fprintf(stderr, _("write error: could send only %i of %ld bytes\n"), tx, len);
+		fprintf(stderr, _("write error: could send only %i of %zu bytes\n"), tx, len);
 		return -1;
 	}
 	return 0;

@@ -233,7 +233,7 @@ int print_img(ptouch_dev ptdev, gdImage *im, int chain, int precut)
 	   See the Brother "Software Developer's Manual - Raster Command
 	   Reference, PT-P900/P900W/P950NW", section 2.3.5 "Raster line". */
 	offset += ptdev->devinfo->pin_offset;
-	printf("max_pixels=%ld, offset=%d\n", max_pixels, offset);
+	printf("max_pixels=%zu, offset=%d\n", max_pixels, offset);
 	if ((ptdev->devinfo->flags & FLAG_RASTER_PACKBITS) == FLAG_RASTER_PACKBITS) {
 		if (arguments.debug) {
 			printf("enable PackBits mode\n");
@@ -862,8 +862,8 @@ int main(int argc, char *argv[])
 	}
 
 	if (arguments.info) {
-		printf(_("printer has %d dpi, maximum printing width is %ld px\n"), ptouch_get_dpi(ptdev), ptouch_get_max_width(ptdev));
-		printf(_("maximum printing width for this tape is %ldpx\n"), ptouch_get_tape_width(ptdev));
+		printf(_("printer has %d dpi, maximum printing width is %zu px\n"), ptouch_get_dpi(ptdev), ptouch_get_max_width(ptdev));
+		printf(_("maximum printing width for this tape is %zupx\n"), ptouch_get_tape_width(ptdev));
 		printf("media type = 0x%02x (%s)\n", ptdev->status->media_type, pt_mediatype(ptdev->status->media_type));
 		printf("media width = %d mm\n", ptdev->status->media_width);
 		printf("tape color = 0x%02x (%s)\n", ptdev->status->tape_color, pt_tapecolor(ptdev->status->tape_color));
