@@ -98,7 +98,7 @@ struct _pt_dev_info ptdevs[] = {
 	   centre (pin 280) - a constant offset across all tape widths. See the
 	   Brother "Software Developer's Manual - Raster Command Reference,
 	   PT-P900/P900W/P950NW", section 2.3.5 "Raster line". */
-	{0x04f9, 0x20af, "PT-P710BT", 128, 180, FLAG_RASTER_PACKBITS|FLAG_HAS_PRECUT, 0, 0},
+	{0x04f9, 0x20af, "PT-P710BT", 128, 180, FLAG_RASTER_PACKBITS|FLAG_HAS_PRECUT|FLAG_P700_INIT|FLAG_USE_INFO_CMD, 0, 0},
 	{0x04f9, 0x20df, "PT-D410", 128, 180, FLAG_USE_INFO_CMD|FLAG_HAS_PRECUT|FLAG_D460BT_MAGIC, 0, 0},
 	{0x04f9, 0x20e0, "PT-D460BT", 128, 180, FLAG_P700_INIT|FLAG_USE_INFO_CMD|FLAG_HAS_PRECUT|FLAG_D460BT_MAGIC, 0, 0},
 	{0x04f9, 0x20e1, "PT-D610BT", 128, 180, FLAG_P700_INIT|FLAG_USE_INFO_CMD|FLAG_HAS_PRECUT|FLAG_D460BT_MAGIC, 0, 0},
